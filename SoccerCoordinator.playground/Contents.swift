@@ -1,5 +1,6 @@
 // Part 1
-//  Dictionary which has key string and array value to hold all players data
+// Dictionary which has key string and array value to hold all players data
+// Data structure [String : [String]]
 let allPlayers = [
     "Joe Smith": ["42", "YES", "Jim and Jan Smith"],
     "Jill Tanner": ["36", "YES", "Clara Tanner"],
@@ -27,6 +28,7 @@ var nonExperienced: [String : [String]] = [:]
 var teamSharks: [String : [String]] = [:]
 var teamDragons: [String : [String]] = [:]
 var teamRaptors: [String : [String]] = [:]
+var letters: [String]
 
 
 // Part 2
@@ -49,22 +51,53 @@ func seperateExperienced() {
 // Dividing the players only based on experience (Height will be added later)
 // Divide experienced in a group of 3 --- func
 func divideExperienced() {
-    for (index, player) in experienced.enumerated() {
-        if index < numberOfTeams {
+    for player in experienced {
+        if teamSharks.count < (experienced.count / numberOfTeams) {
             teamSharks[player.key] = player.value
-        } else if index < numberOfTeams * 2 {
+        } else if teamDragons.count < (experienced.count / numberOfTeams) {
             teamDragons[player.key] = player.value
-        } else if index < numberOfTeams * 3 {
+        } else if teamRaptors.count < (experienced.count / numberOfTeams) {
             teamRaptors[player.key] = player.value
         }
     }
-    print(teamDragons)
 }
 
 // Divide nonExperienced --- func
+func divideNonExperienced() {
+    for player in nonExperienced {
+        if teamSharks.count < (allPlayers.count / numberOfTeams) {
+            teamSharks[player.key] = player.value
+        } else if teamDragons.count < (allPlayers.count / numberOfTeams) {
+            teamDragons[player.key] = player.value
+        } else if teamRaptors.count < (allPlayers.count / numberOfTeams) {
+            teamRaptors[player.key] = player.value
+        }
+    }
+}
 
+// Calculate the height of each team
+func calculateAvgHeight(team: [String : [String]]) -> Float {
+    var additionResult: Float = 0.0
+    for (key, value) in team {
+        additionResult += Float(value[0])!
+    }
+    return additionResult / Float(team.count)
+}
 
-// Think about the height property and how it should be used.
+// Part 3
+// Generate personalized letter(mail)
+func generateLetter(team: [String : [String]]) -> [String] {
+    for (key, value) in team {
+        
+    }
+}
+
+// Remeber to update the function argument so they be useable and felxible
+
 seperateExperienced()
 divideExperienced()
+divideNonExperienced()
+
+
+
 
