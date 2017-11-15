@@ -1,7 +1,7 @@
 // Part 1
-// Dictionary which has key string and array value to hold all players data
+// Collection which has key strings and array values to hold all players data
 // Data structure [String : [String]]
-let allPlayers = [
+let players = [
     "Joe Smith": ["42", "YES", "Jim and Jan Smith"],
     "Jill Tanner": ["36", "YES", "Clara Tanner"],
     "Bill Bon": ["43", "YES", "Sara and Jenny Bon"],
@@ -28,15 +28,15 @@ var nonExperienced: [String : [String]] = [:]
 var teamSharks: [String : [String]] = [:]
 var teamDragons: [String : [String]] = [:]
 var teamRaptors: [String : [String]] = [:]
-var letters: [String]
+var letters: [String] = []
+let allowedRange: Float = 1.5  // Inches
 
 
 // Part 2
 // Iterate through all players
-// Seperate experienced from non experienced
-
+// Seperate experienced from non experienced and put them in two different collections
 func seperateExperienced() {
-    for (key, value) in allPlayers {
+    for (key, value) in players {
         /* value[1] is the experience property
          assuming structure of the data set will not change,
          changes in number of player will not affect this branch */
@@ -48,8 +48,8 @@ func seperateExperienced() {
     }
 }
 
-// Dividing the players only based on experience (Height will be added later)
-// Divide experienced in a group of 3 --- func
+// Dividing the players based on experience only --- Height is considered for nonExperienced
+// Divide experienced 3 by 3 --- No magic number is been used
 func divideExperienced() {
     for player in experienced {
         if teamSharks.count < (experienced.count / numberOfTeams) {
@@ -62,42 +62,79 @@ func divideExperienced() {
     }
 }
 
-// Divide nonExperienced --- func
+// Divide nonExperienced based on height
+// Global average (Average of all players) and team average is been used to meet the height constraint
 func divideNonExperienced() {
     for player in nonExperienced {
-        if teamSharks.count < (allPlayers.count / numberOfTeams) {
-            teamSharks[player.key] = player.value
-        } else if teamDragons.count < (allPlayers.count / numberOfTeams) {
+        if teamDragons.count < (players.count / numberOfTeams) {
             teamDragons[player.key] = player.value
-        } else if teamRaptors.count < (allPlayers.count / numberOfTeams) {
+            // After adding the player, calculate the team average height,
+            // If height is out of range (too short/ too high) player will be removed and be considered later
+            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamDragons) && calculateAvgHeight(team: teamDragons) > calculateAvgHeight(team: players) + allowedRange {
+                    teamDragons.removeValue(forKey: player.key)
+            }
+        } else if teamRaptors.count < (players.count / numberOfTeams) {
             teamRaptors[player.key] = player.value
+            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamRaptors) && calculateAvgHeight(team: teamRaptors) > calculateAvgHeight(team: players) + allowedRange {
+                    teamRaptors.removeValue(forKey: player.key)
+            }
+        } else if teamSharks.count < (players.count / numberOfTeams) {
+            teamSharks[player.key] = player.value
+            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamSharks) && calculateAvgHeight(team: teamSharks) > calculateAvgHeight(team: players) + allowedRange {
+                    teamSharks.removeValue(forKey: player.key)
+            }
         }
     }
 }
 
-// Calculate the height of each team
+// Calculate the height
+// function takes a paramater which could be collection of all players or just a team, returns average
 func calculateAvgHeight(team: [String : [String]]) -> Float {
     var additionResult: Float = 0.0
-    for (key, value) in team {
+    for (_, value) in team {
         additionResult += Float(value[0])!
     }
     return additionResult / Float(team.count)
 }
 
+
 // Part 3
 // Generate personalized letter(mail)
-func generateLetter(team: [String : [String]]) -> [String] {
-    for (key, value) in team {
-        
+func generateLetter() {
+    // value[2] is the guardian name
+    for (key, value) in teamSharks {
+        letters += ["Dear \(value[2]), your child \(key), is in Team Sharks, practicing on March 17, 3pm"]
+    }
+    for (key, value) in teamDragons {
+        letters += ["Dear \(value[2]), your child \(key), is in Team Dragons, practicing on March 17, 1pm"]
+    }
+    for (key, value) in teamRaptors {
+        letters += ["Dear \(value[2]), your child \(key), is in Team Raptors, practicing on March 18, 1pm"]
     }
 }
 
-// Remeber to update the function argument so they be useable and felxible
+// Function to print the letters
+func printLetters() {
+    for letter in letters {
+        print(letter)
+    }
+}
 
-seperateExperienced()
-divideExperienced()
-divideNonExperienced()
+
+// Main function to run the program
+func main(){
+    seperateExperienced()
+    divideExperienced()
+    divideNonExperienced()
+    generateLetter()
+    printLetters()
+    print("-------------")
+    print("All players average height: ", calculateAvgHeight(team: players))
+    print("sharks average height: " , calculateAvgHeight(team: teamSharks))
+    print("dragons average height: " ,calculateAvgHeight(team: teamDragons))
+    print("raptors average height: " ,calculateAvgHeight(team: teamRaptors))
+}
 
 
-
+main()
 
