@@ -31,7 +31,6 @@ var teamRaptors: [String : [String]] = [:]
 var letters: [String] = []
 let allowedRange: Float = 1.5  // Inches
 
-
 // Part 2
 // Iterate through all players
 // Seperate experienced from non experienced and put them in two different collections
@@ -62,26 +61,42 @@ func divideExperienced() {
     }
 }
 
+
 // Divide nonExperienced based on height
 // Global average (Average of all players) and team average is been used to meet the height constraint
 func divideNonExperienced() {
-    for player in nonExperienced {
-        if teamDragons.count < (players.count / numberOfTeams) {
-            teamDragons[player.key] = player.value
-            // After adding the player, calculate the team average height,
-            // If height is out of range (too short/ too high) player will be removed and be considered later
-            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamDragons) && calculateAvgHeight(team: teamDragons) > calculateAvgHeight(team: players) + allowedRange {
-                    teamDragons.removeValue(forKey: player.key)
-            }
-        } else if teamRaptors.count < (players.count / numberOfTeams) {
-            teamRaptors[player.key] = player.value
-            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamRaptors) && calculateAvgHeight(team: teamRaptors) > calculateAvgHeight(team: players) + allowedRange {
-                    teamRaptors.removeValue(forKey: player.key)
-            }
-        } else if teamSharks.count < (players.count / numberOfTeams) {
-            teamSharks[player.key] = player.value
-            if calculateAvgHeight(team: players) - allowedRange > calculateAvgHeight(team: teamSharks) && calculateAvgHeight(team: teamSharks) > calculateAvgHeight(team: players) + allowedRange {
+    // Create a mutable copy of nonExperienced so the confimred player can be removed from it
+    var copyOfNonExperienced = nonExperienced
+    // loop over all the nonExperienced untill every one is confirmed to have a team within the range
+    while copyOfNonExperienced.count != 0 {
+        for player in copyOfNonExperienced {
+            if teamSharks.count < (players.count / numberOfTeams) {
+                // After adding the player, calculate the team average height,
+                // If height is out of range (too short/too high) player will be removed and be considered later
+                teamSharks[player.key] = player.value
+                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamSharks) || calculateAvgHeight(team: teamSharks) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
                     teamSharks.removeValue(forKey: player.key)
+                // if player is within the accepted range, he is confirmed and have a team
+                // so should be removed from the copyOfNonExperienced
+                } else {
+                    copyOfNonExperienced.removeValue(forKey: player.key)
+                }
+                
+            } else if teamDragons.count < (players.count / numberOfTeams) {
+                teamDragons[player.key] = player.value
+                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamDragons) || calculateAvgHeight(team: teamDragons) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
+                    teamDragons.removeValue(forKey: player.key)
+                } else {
+                    copyOfNonExperienced.removeValue(forKey: player.key)
+                }
+                
+            } else if teamRaptors.count < (players.count / numberOfTeams) {
+                teamRaptors[player.key] = player.value
+                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamRaptors) || calculateAvgHeight(team: teamRaptors) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
+                    teamRaptors.removeValue(forKey: player.key)
+                } else {
+                    copyOfNonExperienced.removeValue(forKey: player.key)
+                }
             }
         }
     }
@@ -137,4 +152,3 @@ func main(){
 
 
 main()
-
