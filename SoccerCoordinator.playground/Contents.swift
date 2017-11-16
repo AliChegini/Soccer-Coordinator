@@ -1,45 +1,44 @@
 // Part 1
 // Collection which has key strings and array values to hold all players data
-// Data structure [String : [String]]
+// Data structure [String : [String : Any]]
 let players = [
-    "Joe Smith": ["42", "YES", "Jim and Jan Smith"],
-    "Jill Tanner": ["36", "YES", "Clara Tanner"],
-    "Bill Bon": ["43", "YES", "Sara and Jenny Bon"],
-    "Eva Gordon": ["45", "NO", "Wendy and Mike Gordon"],
-    "Matt Gill": ["40", "NO", "Charles and Sylvia Gill"],
-    "Kimmy Stein": ["41", "NO", "Bill and Hillary Stein"],
-    "Sammy Adams": ["45", "NO", "Jeff Adams"],
-    "Karl Saygan": ["42", "YES", "Heather Bledsoe"],
-    "Suzane Greenberg": ["44", "YES", "Henrietta Dumas"],
-    "Sal Dali": ["41", "NO", "Gala Dali"],
-    "Joe Kavalier": ["39", "NO", "Sam and Elaine Kavalier"],
-    "Ben Finkelstein": ["44", "NO", "Aaron and Jill Finkelstein"],
-    "Diego Soto": ["41", "YES", "Robin and Sarika Soto"],
-    "Chloe Alaska": ["47", "NO", "David and Jamie Alaska"],
-    "Arnold Willis": ["43", "NO", "Claire Willis"],
-    "Phillip Helm": ["44", "YES", "Thomas Helm and Eva Jones"],
-    "Les Clay": ["42", "YES", "Wynonna Brown"],
-    "Herschel Krustofski": ["45", "YES", "Hyman and Rachel Krustofski"]
+    "Joe Smith": ["height": 42.0 ,"hasExperience": true ,"guardianName": "Jim and Jan Smith"],
+    "Jill Tanner": ["height": 36.0 ,"hasExperience": true ,"guardianName": "Clara Tanner"],
+    "Bill Bon": ["height": 43.0 ,"hasExperience": true ,"guardianName": "Sara and Jenny Bon"],
+    "Eva Gordon": ["height": 45.0 ,"hasExperience": false ,"guardianName": "Wendy and Mike Gordon"],
+    "Matt Gill": ["height": 40.0,"hasExperience": false ,"guardianName": "Charles and Sylvia Gill"],
+    "Kimmy Stein": ["height": 41.0,"hasExperience": false ,"guardianName": "Bill and Hillary Stein"],
+    "Sammy Adams": ["height": 45.0 ,"hasExperience": false ,"guardianName": "Jeff Adams"],
+    "Karl Saygan": ["height": 42.0 ,"hasExperience": true ,"guardianName": "Heather Bledsoe"],
+    "Suzane Greenberg": ["height": 44.0 ,"hasExperience": true ,"guardianName": "Henrietta Dumas"],
+    "Sal Dali": ["height": 41.0 ,"hasExperience": false ,"guardianName": "Gala Dali"],
+    "Joe Kavalier": ["height": 39.0 ,"hasExperience": false ,"guardianName": "Sam and Elaine Kavalier"],
+    "Ben Finkelstein": ["height": 44.0 ,"hasExperience":false ,"guardianName": "Aaron and Jill Finkelstein"],
+    "Diego Soto": ["height": 41.0 ,"hasExperience": true ,"guardianName": "Robin and Sarika Soto"],
+    "Chloe Alaska": ["height": 47.0 ,"hasExperience": false ,"guardianName": "David and Jamie Alaska"],
+    "Arnold Willis": ["height": 43.0 ,"hasExperience": false ,"guardianName": "Claire Willis"],
+    "Phillip Helm": ["height": 44.0 ,"hasExperience": true ,"guardianName": "Thomas Helm and Eva Jones"],
+    "Les Clay": ["height": 42.0 ,"hasExperience": true ,"guardianName": "Wynonna Brown"],
+    "Herschel Krustofski": ["height": 45.0 ,"hasExperience": true ,"guardianName": "Hyman and Rachel Krustofski"]
 ]
 
-let numberOfTeams = 3
-var experienced: [String : [String]] = [:]
-var nonExperienced: [String : [String]] = [:]
-var teamSharks: [String : [String]] = [:]
-var teamDragons: [String : [String]] = [:]
-var teamRaptors: [String : [String]] = [:]
+
+let allTeams = ["teamSharks", "teamDragons", "teamRaptors"]
+var experienced: [String : [String : Any]] = [:]
+var nonExperienced: [String : [String : Any]] = [:]
+var teamSharks: [String : [String : Any]] = [:]
+var teamDragons: [String : [String : Any]] = [:]
+var teamRaptors: [String : [String : Any]] = [:]
 var letters: [String] = []
-let allowedRange: Float = 1.5  // Inches
+let allowedRange = 1.5  // Inches
 
 // Part 2
 // Iterate through all players
 // Seperate experienced from non experienced and put them in two different collections
 func seperateExperienced() {
     for (key, value) in players {
-        /* value[1] is the experience property
-         assuming structure of the data set will not change,
-         changes in number of player will not affect this branch */
-        if (value[1] == "YES") {
+        // as! Bool is there to type cast Any to Bool
+        if value["hasExperience"] as! Bool == true {
             experienced[key] = value
         } else {
             nonExperienced[key] = value
@@ -51,11 +50,11 @@ func seperateExperienced() {
 // Divide experienced 3 by 3 --- No magic number is been used
 func divideExperienced() {
     for player in experienced {
-        if teamSharks.count < (experienced.count / numberOfTeams) {
+        if teamSharks.count < (experienced.count / allTeams.count) {
             teamSharks[player.key] = player.value
-        } else if teamDragons.count < (experienced.count / numberOfTeams) {
+        } else if teamDragons.count < (experienced.count / allTeams.count) {
             teamDragons[player.key] = player.value
-        } else if teamRaptors.count < (experienced.count / numberOfTeams) {
+        } else if teamRaptors.count < (experienced.count / allTeams.count) {
             teamRaptors[player.key] = player.value
         }
     }
@@ -70,11 +69,11 @@ func divideNonExperienced() {
     // loop over all the nonExperienced untill every one is confirmed to have a team within the range
     while copyOfNonExperienced.count != 0 {
         for player in copyOfNonExperienced {
-            if teamSharks.count < (players.count / numberOfTeams) {
+            if teamSharks.count < (players.count / allTeams.count) {
                 // After adding the player, calculate the team average height,
                 // If height is out of range (too short/too high) player will be removed and be considered later
                 teamSharks[player.key] = player.value
-                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamSharks) || calculateAvgHeight(team: teamSharks) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
+                if calculateAvgHeight(team: players) - allowedRange / Double(allTeams.count) > calculateAvgHeight(team: teamSharks) || calculateAvgHeight(team: teamSharks) > calculateAvgHeight(team: players) + allowedRange / Double(allTeams.count) {
                     teamSharks.removeValue(forKey: player.key)
                 // if player is within the accepted range, he is confirmed and have a team
                 // so should be removed from the copyOfNonExperienced
@@ -82,17 +81,17 @@ func divideNonExperienced() {
                     copyOfNonExperienced.removeValue(forKey: player.key)
                 }
                 
-            } else if teamDragons.count < (players.count / numberOfTeams) {
+            } else if teamDragons.count < (players.count / allTeams.count) {
                 teamDragons[player.key] = player.value
-                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamDragons) || calculateAvgHeight(team: teamDragons) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
+                if calculateAvgHeight(team: players) - allowedRange / Double(allTeams.count) > calculateAvgHeight(team: teamDragons) || calculateAvgHeight(team: teamDragons) > calculateAvgHeight(team: players) + allowedRange / Double(allTeams.count) {
                     teamDragons.removeValue(forKey: player.key)
                 } else {
                     copyOfNonExperienced.removeValue(forKey: player.key)
                 }
                 
-            } else if teamRaptors.count < (players.count / numberOfTeams) {
+            } else if teamRaptors.count < (players.count / allTeams.count) {
                 teamRaptors[player.key] = player.value
-                if calculateAvgHeight(team: players) - allowedRange / Float(numberOfTeams) > calculateAvgHeight(team: teamRaptors) || calculateAvgHeight(team: teamRaptors) > calculateAvgHeight(team: players) + allowedRange / Float(numberOfTeams) {
+                if calculateAvgHeight(team: players) - allowedRange / Double(allTeams.count) > calculateAvgHeight(team: teamRaptors) || calculateAvgHeight(team: teamRaptors) > calculateAvgHeight(team: players) + allowedRange / Double(allTeams.count) {
                     teamRaptors.removeValue(forKey: player.key)
                 } else {
                     copyOfNonExperienced.removeValue(forKey: player.key)
@@ -104,27 +103,27 @@ func divideNonExperienced() {
 
 // Calculate the height
 // function takes a paramater which could be collection of all players or just a team, returns average
-func calculateAvgHeight(team: [String : [String]]) -> Float {
-    var additionResult: Float = 0.0
+func calculateAvgHeight(team: [String : [String : Any]]) -> Double {
+    var additionResult = 0.0
     for (_, value) in team {
-        additionResult += Float(value[0])!
+        additionResult += value["height"] as! Double
     }
-    return additionResult / Float(team.count)
+    return additionResult / Double(team.count)
 }
 
 
 // Part 3
 // Generate personalized letter(mail)
 func generateLetter() {
-    // value[2] is the guardian name
+    // ?? "" is there to get rid of Optionals
     for (key, value) in teamSharks {
-        letters += ["Dear \(value[2]), your child \(key), is in Team Sharks, practicing on March 17, 3pm"]
+        letters += ["Dear \(value["guardianName"] ?? ""), your child \(key), is in Team Sharks, practicing on March 17, 3pm"]
     }
     for (key, value) in teamDragons {
-        letters += ["Dear \(value[2]), your child \(key), is in Team Dragons, practicing on March 17, 1pm"]
+        letters += ["Dear \(value["guardianName"] ?? ""), your child \(key), is in Team Dragons, practicing on March 17, 1pm"]
     }
     for (key, value) in teamRaptors {
-        letters += ["Dear \(value[2]), your child \(key), is in Team Raptors, practicing on March 18, 1pm"]
+        letters += ["Dear \(value["guardianName"] ?? ""), your child \(key), is in Team Raptors, practicing on March 18, 1pm"]
     }
 }
 
@@ -137,7 +136,7 @@ func printLetters() {
 
 
 // Main function to run the program
-func main(){
+func runTheProgram(){
     seperateExperienced()
     divideExperienced()
     divideNonExperienced()
@@ -151,4 +150,4 @@ func main(){
 }
 
 
-main()
+runTheProgram()
